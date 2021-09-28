@@ -1,0 +1,66 @@
+version: "3.7"
+
+services:
+  payd-customer:
+    container_name: payd-customer
+    image: libsv/payd:0.0.2
+    environment:
+      DB_DSN: "file:paydb/wallet.db?cache=shared&_foreign_keys=true"
+      DB_SCHEMA_PATH: "migrations"
+      SERVER_HOST: payd-customer:8443
+    volumes:
+      - customer-data:/paydb
+    ports:
+      - "8443:8443"
+    networks:
+      - regtest-stack
+
+  payd-merchant:
+    container_name: payd-merchant
+    image: libsv/payd:0.0.2
+    environment:
+      DB_DSN: "file:paydb/wallet.db?cache=shared&_foreign_keys=true"
+      DB_SCHEMA_PATH: "migrations"
+      SERVER_HOST: payd-merchant:8443
+    volumes:
+      - merchant-data:/paydb
+    ports:
+      - "28443:8443"
+    networks:
+      - regtest-stack
+
+  p4-customer:
+    container_name: p4-customer
+    image: libsv/p4:0.0.1
+    environment:
+      LOG_LEVEL: "debug"
+      SERVER_HOST: p4-customer
+      PAYD_HOST: "payd-customer"
+    ports:
+      - "8445:8445"
+    networks:
+      - regtest-stack
+
+  p4-merchant:
+    container_name: p4-merchant
+    image: libsv/p4:0.0.1
+    environment:
+      LOG_LEVEL: "debug"
+      PAYD_HOST: "payd-merchant"
+      SERVER_HOST: "p4-merchant"
+    ports:
+      - "28445:8445"
+    networks:
+      - regtest-stack 
+
+volumes:
+  merchant-data:
+    external: false
+  customer-data:
+    external: false
+
+networks:
+  regtest-stack:
+    external: true
+    name: regtest-stack
+    external: true
