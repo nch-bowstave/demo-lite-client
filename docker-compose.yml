@@ -3,7 +3,7 @@ version: "3.7"
 services:
   payd-customer:
     container_name: payd-customer
-    image: libsv/payd:0.0.2
+    image: libsv/payd:0.0.3
     environment:
       DB_DSN: "file:paydb/wallet.db?cache=shared&_foreign_keys=true"
       DB_SCHEMA_PATH: "migrations"
@@ -17,7 +17,7 @@ services:
 
   payd-merchant:
     container_name: payd-merchant
-    image: libsv/payd:0.0.2
+    image: libsv/payd:0.0.3
     environment:
       DB_DSN: "file:paydb/wallet.db?cache=shared&_foreign_keys=true"
       DB_SCHEMA_PATH: "migrations"
