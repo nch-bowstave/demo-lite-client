@@ -1,0 +1,6 @@
+#!/bin/bash
+
+docker run \
+	-v $(pwd)/payctl.yml:/.payctl.yml:ro \
+	--network="regtest-stack" \
+	tigh/payctl:latest payctl $@

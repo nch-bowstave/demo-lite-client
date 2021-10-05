@@ -1,0 +1,21 @@
+contexts:
+  customer:
+    account:
+      name: customer
+    p4:
+      host: http://p4-customer:8445
+      port: :8445
+    payd:
+      host: http://payd-customer:8443
+      port: :8443
+  merchant:
+    account:
+      name: merchant
+    p4:
+      host: http://p4-merchant:8445
+      port: :8445
+    payd:
+      host: http://payd-merchant:8443
+      port: :8443
+current:
+  context: customer
