@@ -19,3 +19,5 @@ contexts:
       port: :8443
 current:
   context: customer
+regtest:
+  host: http://node1:18332
