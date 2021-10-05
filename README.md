@@ -1,1 +1,1 @@
-# cgw-demo-lite-client
+# demo-lite-client
