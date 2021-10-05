@@ -3,7 +3,7 @@ version: "3.7"
 services:
   payd-customer:
     container_name: payd-customer
-    image: libsv/payd:0.0.3
+    image: libsv/payd:0.0.7
     environment:
       DB_DSN: "file:paydb/wallet.db?cache=shared&_foreign_keys=true"
       DB_SCHEMA_PATH: "migrations"
@@ -18,7 +18,7 @@ services:
 
   payd-merchant:
     container_name: payd-merchant
-    image: libsv/payd:0.0.3
+    image: libsv/payd:0.0.7
     environment:
       DB_DSN: "file:paydb/wallet.db?cache=shared&_foreign_keys=true"
       DB_SCHEMA_PATH: "migrations"
@@ -33,11 +33,12 @@ services:
 
   p4-customer:
     container_name: p4-customer
-    image: libsv/p4:0.0.1
+    image: libsv/p4:0.0.4
     environment:
       LOG_LEVEL: "debug"
       SERVER_HOST: p4-customer
       PAYD_HOST: "payd-customer"
+      SERVER_FQDN: "p4-customer:8445"
     ports:
       - "8445:8445"
     networks:
@@ -45,11 +46,12 @@ services:
 
   p4-merchant:
     container_name: p4-merchant
-    image: libsv/p4:0.0.1
+    image: libsv/p4:0.0.4
     environment:
       LOG_LEVEL: "debug"
       PAYD_HOST: "payd-merchant"
       SERVER_HOST: "p4-merchant"
+      SERVER_FQDN: "p4-merchant:8445"
     ports:
       - "28445:8445"
     networks:
