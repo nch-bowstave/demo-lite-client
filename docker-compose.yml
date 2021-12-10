@@ -3,13 +3,19 @@ version: "3.7"
 services:
   payd-customer:
     container_name: payd-customer
-    image: libsv/payd:0.0.9
+    image: libsv/payd:0.1.2
     environment:
       DB_DSN: "file:paydb/wallet.db?cache=shared&_foreign_keys=true"
       DB_SCHEMA_PATH: "migrations"
       SERVER_HOST: payd-customer:8443
+      P4_HOST: 'ws://p4-customer:8445/ws'
       LOG_LEVEL: "debug"
       ENV_BITCOIN_NETWORK: regtest
+      MAPI_CALLBACK_HOST: 'http://p4-customer:8445'
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "localhost:8443/api/v1/health" ]
+      interval: 30s
+      timeout: 10s
     volumes:
       - customer-data:/paydb
     ports:
@@ -19,26 +25,35 @@ services:
 
   payd-merchant:
     container_name: payd-merchant
-    image: libsv/payd:0.0.9
+    image: libsv/payd:0.1.2
     environment:
       DB_DSN: "file:paydb/wallet.db?cache=shared&_foreign_keys=true"
       DB_SCHEMA_PATH: "migrations"
-      SERVER_HOST: payd-merchant:8443
+      SERVER_HOST: payd-merchant:28443
+      SERVER_PORT: :28443
       SERVER_SWAGGER_HOST: 'localhost:28443'
+      P4_HOST: 'ws://p4-merchant:28445/ws'
       LOG_LEVEL: "debug"
       ENV_BITCOIN_NETWORK: regtest
+      MAPI_CALLBACK_HOST: 'http://p4-merchant:28445'
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "localhost:28443/api/v1/health" ]
+      interval: 30s
+      timeout: 10s
     volumes:
       - merchant-data:/paydb
     ports:
-      - "28443:8443"
+      - "28443:28443"
     networks:
       - regtest-stack
 
   p4-customer:
     container_name: p4-customer
-    image: libsv/p4:0.0.6
+    image: libsv/p4:0.1.1
     environment:
       LOG_LEVEL: "debug"
+        #TRANSPORT_MODE: 'http'
+      TRANSPORT_MODE: 'hybrid'
       SERVER_HOST: p4-customer
       PAYD_HOST: "payd-customer"
       SERVER_FQDN: "p4-customer:8445"
@@ -49,14 +64,17 @@ services:
 
   p4-merchant:
     container_name: p4-merchant
-    image: libsv/p4:0.0.6
+    image: libsv/p4:0.1.1
     environment:
       LOG_LEVEL: "debug"
+      #TRANSPORT_MODE: 'http'
+      TRANSPORT_MODE: 'hybrid'
       PAYD_HOST: "payd-merchant"
       SERVER_HOST: "p4-merchant"
-      SERVER_FQDN: "p4-merchant:8445"
+      SERVER_PORT: :28445
+      SERVER_FQDN: "p4-merchant:28445"
     ports:
-      - "28445:8445"
+      - "28445:28445"
     networks:
       - regtest-stack 
 
